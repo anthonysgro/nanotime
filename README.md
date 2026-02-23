@@ -39,9 +39,9 @@ nanotime is for when you just want to know what time it is and how long somethin
 | Feature | `nanotime` | `chrono` | `time` |
 |---------|:----------:|:--------:|:------:|
 | Zero dependencies | ✓ | ✗ | ✗ |
-| Current local time | ✓ | ✓ | ✓ |
 | Single file | ✓ | ✗ | ✗ |
 | Clean build (release) | ~0.12s | ~1.6s | ~1.6s |
+| Current local time | ✓ | ✓ | ✓ |
 | Current UTC time | ✓ | ✓ | ✓ |
 | Nanosecond precision | ✓ | ✓ | ✓ |
 | Elapsed measurement | ✓ | ✗ | ✗ |
