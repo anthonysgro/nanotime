@@ -1,0 +1,17 @@
+[package]
+name = "nanotime"
+version = "0.1.0"
+edition = "2021"
+authors = ["Anthony Sgro"]
+description = "A minimal, zero-dependency time utility crate for Rust CLI applications"
+license = "MIT"
+repository = "https://github.com/anthonysgro/nanotime"
+keywords = ["time", "datetime", "clock", "cli", "nanosecond"]
+categories = ["date-and-time", "command-line-interface"]
+readme = "README.md"
+exclude = ["tests/*.proptest-regressions"]
+
+[dependencies]
+
+[dev-dependencies]
+proptest = "1"
