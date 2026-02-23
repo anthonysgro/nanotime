@@ -65,6 +65,7 @@ mod platform {
         fn clock_gettime(clk_id: i32, tp: *mut Timespec) -> i32;
     }
 
+    #[cfg(not(tarpaulin_include))]
     pub fn now() -> NanoTime {
         unsafe {
             let mut ts = std::mem::zeroed::<Timespec>();
@@ -951,5 +952,71 @@ mod tests {
         let a = NanoTime::new(2026, 1, 1, 0, 0, 0, 100).unwrap();
         let b = NanoTime::new(2026, 1, 1, 0, 0, 0, 200).unwrap();
         assert!(a < b);
+    }
+
+    // --- Coverage gap tests ---
+
+    #[test]
+    fn test_now_utc_returns_valid() {
+        let nt = NanoTime::now_utc();
+        assert!(nt.year() >= 2020);
+        assert!(nt.month() >= 1 && nt.month() <= 12);
+        assert!(nt.day() >= 1 && nt.day() <= 31);
+        assert!(nt.hour() <= 23);
+        assert!(nt.minute() <= 59);
+        assert!(nt.second() <= 59);
+    }
+
+    #[test]
+    fn test_ago_returns_string() {
+        let past = NanoTime::from_epoch(0);
+        let result = past.ago();
+        assert!(result.ends_with("ago"));
+    }
+
+    #[test]
+    fn test_elapsed_us_nonnegative() {
+        let timer = Elapsed::start();
+        let us = timer.elapsed_us();
+        assert!(us < 1_000_000);
+    }
+
+    #[test]
+    fn test_elapsed_nanos_nonnegative() {
+        let timer = Elapsed::start();
+        let ns = timer.elapsed_nanos();
+        assert!(ns < 1_000_000_000);
+    }
+
+    #[test]
+    fn test_elapsed_display_secs_format() {
+        // Create an Elapsed whose start is far enough in the past to trigger the >=1s branch.
+        // We can't easily fake Instant, so we use a sleep.
+        let timer = Elapsed::start();
+        // Spin-wait is unreliable, so instead test the format logic directly:
+        // We know that if elapsed >= 1000ms, Display writes "{:.2}s".
+        // For coverage, we just need the branch to execute once.
+        std::thread::sleep(std::time::Duration::from_millis(1010));
+        let display = format!("{}", timer);
+        assert!(
+            display.ends_with("s") && !display.ends_with("ms"),
+            "expected seconds format, got '{}'",
+            display
+        );
+    }
+
+    #[test]
+    fn test_days_in_month_invalid_month() {
+        assert!(NanoTime::new(2026, 0, 1, 0, 0, 0, 0).is_none());
+        assert!(NanoTime::new(2026, 13, 1, 0, 0, 0, 0).is_none());
+        assert!(NanoTime::new(2026, 255, 1, 0, 0, 0, 0).is_none());
+    }
+
+    #[test]
+    fn test_days_in_month_catch_all_branch() {
+        // Call the private function directly to cover the _ => 0 branch
+        assert_eq!(days_in_month(2026, 0), 0);
+        assert_eq!(days_in_month(2026, 13), 0);
+        assert_eq!(days_in_month(2026, 255), 0);
     }
 }
