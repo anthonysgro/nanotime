@@ -1,7 +1,39 @@
+//! # nanotime
+//!
+//! A minimal, zero-dependency time utility crate for Rust CLI applications.
+//!
+//! `nanotime` provides nanosecond-precision timestamps, human-readable formatting,
+//! relative time strings, and a simple elapsed-time stopwatch — all without pulling
+//! in heavy datetime libraries.
+//!
+//! ## Quick start
+//!
+//! ```rust
+//! use nanotime::{NanoTime, Elapsed};
+//!
+//! // Current local time
+//! let now = NanoTime::now();
+//! println!("{}", now.datetime());  // "2026-02-23 14:30:05.042"
+//!
+//! // From a Unix epoch
+//! let t = NanoTime::from_epoch(1_000_000_000);
+//! println!("{}", t.date());  // "2001-09-09"
+//!
+//! // Relative time
+//! let earlier = NanoTime::from_epoch(1_000_000_000);
+//! let later   = NanoTime::from_epoch(1_000_003_600);
+//! println!("{}", earlier.relative_to(&later));  // "1h ago"
+//!
+//! // Stopwatch
+//! let timer = Elapsed::start();
+//! // ... do work ...
+//! println!("took {}", timer);  // "42ms"
+//! ```
+
 use std::fmt;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
-// --- Platform FFI for local time ---
+// Platform-specific FFI for local time resolution.
 
 #[cfg(unix)]
 mod platform {
@@ -159,6 +191,13 @@ fn epoch_to_date(secs: u64) -> NanoTime {
     }
 }
 
+/// A nanosecond-precision timestamp.
+///
+/// `NanoTime` stores a calendar date and time with nanosecond resolution.
+/// It can be constructed from Unix epoch values, the system clock, or
+/// individual components via [`NanoTime::new`].
+///
+/// Implements `Display` as `HH:MM:SS.mmm` and supports `Ord` for sorting.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct NanoTime {
     year: u16,
@@ -171,6 +210,11 @@ pub struct NanoTime {
 }
 
 impl NanoTime {
+    /// Creates a new `NanoTime` from individual components.
+    ///
+    /// Returns `None` if any field is out of range (e.g. month 0 or 13,
+    /// day 0 or beyond the month's length, hour > 23, nanosecond ≥ 1 billion).
+    /// Leap year rules are respected for February 29.
     pub fn new(
         year: u16,
         month: u8,
@@ -209,24 +253,31 @@ impl NanoTime {
         })
     }
 
+    /// Returns the year (e.g. 2026).
     pub fn year(&self) -> u16 {
         self.year
     }
+    /// Returns the month (1–12).
     pub fn month(&self) -> u8 {
         self.month
     }
+    /// Returns the day of the month (1–31).
     pub fn day(&self) -> u8 {
         self.day
     }
+    /// Returns the hour (0–23).
     pub fn hour(&self) -> u8 {
         self.hour
     }
+    /// Returns the minute (0–59).
     pub fn minute(&self) -> u8 {
         self.minute
     }
+    /// Returns the second (0–59).
     pub fn second(&self) -> u8 {
         self.second
     }
+    /// Returns the nanosecond component (0–999_999_999).
     pub fn nanosecond(&self) -> u32 {
         self.nanosecond
     }
@@ -430,6 +481,18 @@ impl fmt::Display for NanoTime {
     }
 }
 
+/// A simple stopwatch for measuring elapsed wall-clock time.
+///
+/// Uses `std::time::Instant` under the hood. Displays as milliseconds
+/// when under one second, otherwise as seconds with two decimal places.
+///
+/// ```rust
+/// use nanotime::Elapsed;
+///
+/// let timer = Elapsed::start();
+/// // ... do work ...
+/// println!("took {}", timer);
+/// ```
 pub struct Elapsed {
     start: Instant,
 }

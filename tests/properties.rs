@@ -69,13 +69,11 @@ proptest! {
         prop_assert_eq!(nt.to_epoch_secs(), s);
     }
 
-    /// **Validates: Requirements 1.1, 1.2**
     #[test]
     fn from_epoch_round_trip(s in 0u64..=4_102_444_800) {
         prop_assert_eq!(NanoTime::from_epoch(s).to_epoch_secs(), s);
     }
 
-    /// **Validates: Requirements 2.1, 2.3**
     #[test]
     fn diff_secs_matches_definition(a_secs in 0u64..=4_102_444_800, b_secs in 0u64..=4_102_444_800) {
         let a = NanoTime::from_epoch(a_secs);
@@ -84,7 +82,6 @@ proptest! {
         prop_assert_eq!(a.diff_secs(&b), expected);
     }
 
-    /// **Validates: Requirements 2.2**
     #[test]
     fn diff_secs_antisymmetry(a_secs in 0u64..=4_102_444_800, b_secs in 0u64..=4_102_444_800) {
         let a = NanoTime::from_epoch(a_secs);
@@ -122,8 +119,7 @@ proptest! {
         }
     }
 
-    /// Feature: nanosecond-precision, Property 1: Nanosecond field range invariant
-    /// **Validates: Requirements 1.2, 2.2, 3.3**
+    /// Nanosecond field is always in [0, 999_999_999] regardless of constructor.
     #[test]
     fn nanosecond_field_range_invariant(
         secs in 0u64..=4_102_444_800u64,
@@ -137,8 +133,7 @@ proptest! {
         prop_assert!(NanoTime::from_epoch_us(us).nanosecond() <= 999_999_999);
     }
 
-    /// Feature: nanosecond-precision, Property 2: Accessor correctness
-    /// **Validates: Requirements 1.3, 1.4**
+    /// millisecond() and microsecond() are derived correctly from nanosecond().
     #[test]
     fn accessor_correctness(n in 0u32..=999_999_999) {
         let nt = NanoTime::new(2000, 1, 1, 0, 0, 0, n).unwrap();
@@ -146,24 +141,21 @@ proptest! {
         prop_assert_eq!(nt.microsecond(), n / 1_000);
     }
 
-    /// Feature: nanosecond-precision, Property 3: Epoch-seconds constructors set nanosecond to zero
-    /// **Validates: Requirements 4.3**
+    /// from_epoch() always produces nanosecond == 0.
     #[test]
     fn epoch_secs_constructors_set_nanosecond_zero(s in 0u64..=4_102_444_800) {
         prop_assert_eq!(NanoTime::from_epoch(s).nanosecond(), 0);
         prop_assert_eq!(NanoTime::from_epoch(s).nanosecond(), 0);
     }
 
-    /// Feature: nanosecond-precision, Property 4: Nanosecond epoch round-trip
-    /// **Validates: Requirements 6.1**
+    /// from_epoch_nanos(to_epoch_nanos(nt)) == nt.
     #[test]
     fn nanosecond_epoch_round_trip(nt in arb_nanotime()) {
         let round_tripped = NanoTime::from_epoch_nanos(nt.to_epoch_nanos());
         prop_assert_eq!(round_tripped, nt);
     }
 
-    /// Feature: nanosecond-precision, Property 5: Millisecond epoch round-trip
-    /// **Validates: Requirements 6.2**
+    /// Millisecond round-trip truncates sub-millisecond precision.
     #[test]
     fn millisecond_epoch_round_trip(nt in arb_nanotime()) {
         let round_tripped = NanoTime::from_epoch_ms(nt.to_epoch_ms());
@@ -174,8 +166,7 @@ proptest! {
         prop_assert_eq!(round_tripped, expected);
     }
 
-    /// Feature: nanosecond-precision, Property 7: Microsecond epoch round-trip
-    /// **Validates: Requirements 6.4**
+    /// Microsecond round-trip truncates sub-microsecond precision.
     #[test]
     fn microsecond_epoch_round_trip(nt in arb_nanotime()) {
         let round_tripped = NanoTime::from_epoch_us(nt.to_epoch_us());
@@ -188,8 +179,7 @@ proptest! {
 }
 
 proptest! {
-    /// Feature: nanosecond-precision, Property 9: Display and datetime formatting
-    /// **Validates: Requirements 7.1, 7.2**
+    /// Display is HH:MM:SS.mmm; datetime() is date() + " " + Display.
     #[test]
     fn display_and_datetime_formatting(nt in arb_nanotime()) {
         let display = format!("{}", nt);
@@ -209,8 +199,7 @@ proptest! {
         prop_assert_eq!(dt_parts[1], expected_ms.as_str());
     }
 
-    /// Feature: nanosecond-precision, Property 10: datetime_fmt correctness
-    /// **Validates: Requirements 7.3, 7.4, 7.5**
+    /// datetime_fmt(p) produces the correct fractional digits, clamped at 9.
     #[test]
     fn datetime_fmt_correctness(nt in arb_nanotime(), precision in 0u8..=15) {
         let result = nt.datetime_fmt(precision);
@@ -232,8 +221,7 @@ proptest! {
         }
     }
 
-    /// Feature: nanosecond-precision, Property 11: Sub-second diff methods match epoch conversions
-    /// **Validates: Requirements 8.2, 8.3, 8.4**
+    /// diff_nanos, diff_ms, diff_us equal the difference of the corresponding epoch conversions.
     #[test]
     fn sub_second_diff_methods(a in arb_nanotime(), b in arb_nanotime()) {
         prop_assert_eq!(a.diff_nanos(&b), a.to_epoch_nanos() as i128 - b.to_epoch_nanos() as i128);
@@ -241,8 +229,7 @@ proptest! {
         prop_assert_eq!(a.diff_us(&b), a.to_epoch_us() as i128 - b.to_epoch_us() as i128);
     }
 
-    /// Feature: nanosecond-precision, Property 8: Second-granularity methods truncate nanoseconds
-    /// **Validates: Requirements 5.3, 8.1**
+    /// to_epoch_secs and diff_secs ignore the nanosecond field.
     #[test]
     fn second_granularity_truncates_nanoseconds(
         nt in arb_nanotime(),
@@ -275,8 +262,7 @@ fn test_days_in_month(year: u16, month: u8) -> u8 {
 }
 
 proptest! {
-    /// Feature: field-encapsulation, Property 1: Constructor-getter round trip
-    /// **Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 3.8**
+    /// NanoTime::new followed by getters returns the original values.
     #[test]
     fn constructor_getter_round_trip(
         year in 0u16..=9999,
@@ -303,8 +289,7 @@ proptest! {
         prop_assert_eq!(nt.microsecond(), nanosecond / 1_000);
     }
 
-    /// Feature: field-encapsulation, Property 2: Invalid input rejection
-    /// **Validates: Requirements 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.9**
+    /// NanoTime::new returns None when any field is out of range.
     #[test]
     fn invalid_input_rejection(
         year in 0u16..=9999,
