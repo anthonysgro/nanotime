@@ -7,7 +7,7 @@ Part of the nano crate family — minimal, zero-dependency building blocks for C
 - [nanocolor](https://github.com/anthonysgro/nanocolor) — terminal colors and styles
 - [nanospinner](https://github.com/anthonysgro/nanospinner) — terminal spinners
 - [nanoprogress](https://github.com/anthonysgro/nanoprogress) — progress bars
-- [nanolog](https://github.com/anthonysgro/nanolog) — minimal logger
+- [nanologger](https://github.com/anthonysgro/nanologger) — minimal logger
 - [nanotime](https://github.com/anthonysgro/nanotime) — time utilities
 
 Local and UTC time retrieval, nanosecond-precision timestamps, human-readable formatting, relative time strings, and lightweight elapsed duration measurement — no heavy crates, no transitive dependencies.
