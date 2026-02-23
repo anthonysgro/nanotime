@@ -1,7 +1,4 @@
-# ⏱ nanotime
-
-[![Crates.io](https://img.shields.io/crates/v/nanotime)](https://crates.io/crates/nanotime)
-[![Docs.rs](https://docs.rs/nanotime/badge.svg)](https://docs.rs/nanotime/latest/nanotime/)
+# ⏱ nanotime [![Build Status](https://github.com/anthonysgro/nanotime/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/anthonysgro/nanotime/actions) [![Coverage Status](https://coveralls.io/repos/github/anthonysgro/nanotime/badge.svg?branch=main)](https://coveralls.io/github/anthonysgro/nanotime?branch=main) [![Crates.io](https://img.shields.io/crates/v/nanotime)](https://crates.io/crates/nanotime) [![Crates.io](https://img.shields.io/crates/l/nanotime)](https://crates.io/crates/nanotime) [![Docs.rs](https://docs.rs/nanotime/badge.svg)](https://docs.rs/nanotime/latest/nanotime/)
 
 A minimal, zero-dependency time utility crate for Rust CLI applications.
 
