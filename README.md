@@ -54,9 +54,8 @@ nanotime is for when you just want to know what time it is and how long somethin
 
 ## Quick Start
 
-```toml
-[dependencies]
-nanotime = "0.1.0"
+```sh
+cargo add nanotime
 ```
 
 ```rust
