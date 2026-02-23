@@ -40,6 +40,8 @@ nanotime is for when you just want to know what time it is and how long somethin
 |---------|:----------:|:--------:|:------:|
 | Zero dependencies | ✓ | ✗ | ✗ |
 | Current local time | ✓ | ✓ | ✓ |
+| Single file | ✓ | ✗ | ✗ |
+| Clean build (release) | ~0.12s | ~1.6s | ~1.6s |
 | Current UTC time | ✓ | ✓ | ✓ |
 | Nanosecond precision | ✓ | ✓ | ✓ |
 | Elapsed measurement | ✓ | ✗ | ✗ |
@@ -49,7 +51,6 @@ nanotime is for when you just want to know what time it is and how long somethin
 | Date/time parsing | ✗ | ✓ | ✓ |
 | Date/time arithmetic | ✗ | ✓ | ✓ |
 | `no_std` support | ✗ | ✗ | ✓ |
-| Single file | ✓ | ✗ | ✗ |
 
 ## Quick Start
 
